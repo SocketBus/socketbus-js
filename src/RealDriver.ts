@@ -72,7 +72,8 @@ export default class RealDriver {
     public connect() {
         this.socket = io.default(`https://0.0.0.0:3000/`, this.getSocketOptions());
         // this.socket = io(`http://localhost:3001/`, this.getSocketOptions());
-        this.socket.on('connect', ()=>{
+        this.socket.on('$start', (data: any)=>{
+            console.log(data)
             this.isConnected = true;
             this.executeAllCallbacksOnConnect();
             if (this.options.onConnect) {
@@ -80,6 +81,7 @@ export default class RealDriver {
             }
         });
         this.socket.on('disconnect', ()=>{
+            console.log('disconnect')
             this.isConnected = false;
         });
     }

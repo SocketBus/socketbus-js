@@ -39,7 +39,7 @@ var reqfields = [
 // DEPRECATIONS:
 //  - Passing a string instead of the params object has been removed!
 //
-exports.ajax = function (params, callback) {
+export const ajax = (params, callback) => {
   // Any variable used more than once is var'd here because
   // minification will munge the variables whereas it can't munge
   // the object access.

@@ -192,4 +192,14 @@ export default class Channel {
             auth_token: this.authToken
         });
     }
+
+    /**
+     * Whispers a small message
+     * 
+     * @memberof Channel
+     */
+    // public whisper(): void {
+    //     this.socket.emit('whisper', {
+    //     })
+    // }
 }
