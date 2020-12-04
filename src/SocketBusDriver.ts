@@ -71,7 +71,7 @@ export default class SocketBusDriver {
      */
     public connect() {
         
-        this.socket = io.default(this.options.url ? this.options.url: `https://0.0.0.0:3000/`, this.getSocketOptions());
+        this.socket = io.default(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
         // this.socket = io(`http://localhost:3001/`, this.getSocketOptions());
         this.socket.on('$start', (data: any)=>{
             this.isConnected = true;
