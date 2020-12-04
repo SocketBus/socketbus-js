@@ -74,7 +74,6 @@ export default class SocketBusDriver {
         this.socket = io.default(this.options.url ? this.options.url: `https://0.0.0.0:3000/`, this.getSocketOptions());
         // this.socket = io(`http://localhost:3001/`, this.getSocketOptions());
         this.socket.on('$start', (data: any)=>{
-            console.log(data)
             this.isConnected = true;
             this.executeAllCallbacksOnConnect();
             if (this.options.onConnect) {
@@ -82,7 +81,6 @@ export default class SocketBusDriver {
             }
         });
         this.socket.on('disconnect', ()=>{
-            console.log('disconnect')
             this.isConnected = false;
         });
     }
