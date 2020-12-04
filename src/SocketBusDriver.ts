@@ -59,7 +59,7 @@ export default class SocketBusDriver {
     public getSocketOptions(): any {
         return {
             query: `appId=${this.options.app_id}`,
-            path: '/socket-bus',
+            path: '/socketbus',
             transports: ['websocket', 'polling']
         };
     }
