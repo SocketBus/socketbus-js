@@ -1,4 +1,4 @@
-import RealDriver from "../../RealDriver";
+import SocketBusDriver from "../../SocketBusDriver";
 import Channel from '../../channels/Channel';
 import PresenceChannel from '../../channels/PresenceChannel';
 import LaravelAuthenticator from './LaravelAuthenticator';
@@ -42,10 +42,10 @@ export class LaravelConnector {
     /**
      * Our amazing driver!
      *
-     * @type {RealDriver}
+     * @type {SocketBusDriver}
      * @memberof LaravelConnector
      */
-    real: RealDriver;
+    socketBus: SocketBusDriver;
 
     /**
      * Merge the custom options with the defaults.
@@ -76,16 +76,16 @@ export class LaravelConnector {
             return event.replace(/\./g, '\\');
         }
 
-        this.real = new RealDriver(Object.assign(this._defaultOptions, options));
-        this.real.authenticator.setExternal(new LaravelAuthenticator(this.real.options));
-        this.real.connect();
+        this.socketBus = new SocketBusDriver(Object.assign(this._defaultOptions, options));
+        this.socketBus.authenticator.setExternal(new LaravelAuthenticator(this.socketBus.options));
+        this.socketBus.connect();
     }
 
     /**
      * Listen for an event on a channel instance.
      */
     listen(name: string, event: string, callback: Function): Channel {
-        let channel: Channel = this.real.getChannel(name);
+        let channel: Channel = this.socketBus.getChannel(name);
         channel.listen(event, callback);
         return channel;
     }
@@ -94,28 +94,28 @@ export class LaravelConnector {
      * Get a channel instance by name.
      */
     channel(name: string): Channel {
-        return this.real.getChannel(name);
+        return this.socketBus.getChannel(name);
     }
 
     /**
      * Get a private channel instance by name.
      */
     privateChannel(name: string): Channel {
-        return this.real.getChannel(`private-${name}`);
+        return this.socketBus.getChannel(`private-${name}`);
     }
 
     /**
      * Get a presence channel instance by name.
      */
     presenceChannel(name: string) {
-        return this.real.getChannel(`presence-${name}`, PresenceChannel);
+        return this.socketBus.getChannel(`presence-${name}`, PresenceChannel);
     }
 
     /**
      * Get a state channel instance by name.
      */
     stateChannel(name: string) {
-        return this.real.getChannel(`state-${name}`, StateChannel);
+        return this.socketBus.getChannel(`state-${name}`, StateChannel);
     }
 
     /**
@@ -133,21 +133,21 @@ export class LaravelConnector {
      * Leave the given channel.
      */
     leaveChannel(name: string): void {
-        this.real.leaveChannel(name);
+        this.socketBus.leaveChannel(name);
     }
 
     /**
      * Get the socket ID for the connection.
      */
     socketId(): string {
-        return this.real.getSocketId();
+        return this.socketBus.getSocketId();
     }
 
     /**
      * Disconnect Socketio connection.
      */
     disconnect(): void {
-        this.real.disconnect();
+        this.socketBus.disconnect();
     }
 
     /**

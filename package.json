@@ -1,5 +1,5 @@
 {
-  "name": "fastdata-js",
+  "name": "socketbus-js",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/datayet/datayetjs.git"
+    "url": "git+https://github.com/socketbus/socketbus-js.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/datayet/datayetjs/issues"
+    "url": "https://github.com/socketbus/socketbus-js/issues"
   },
-  "homepage": "https://github.com/datayet/datayetjs#readme",
+  "homepage": "https://github.com/socketbus/socketbus-js#readme",
   "dependencies": {
     "socket.io-client": "^2.3.1"
   },

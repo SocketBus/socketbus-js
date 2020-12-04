@@ -6,13 +6,13 @@ import * as io from "socket.io-client";
 import Authenticator from './auth/Authenticator';
 import PresenceChannel from './channels/PresenceChannel';
 
-export default class RealDriver {
+export default class SocketBusDriver {
     /**
      * Socket instance.
      *
      * @private
      * @type {*}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     private socket: any;
 
@@ -21,7 +21,7 @@ export default class RealDriver {
      *
      * @private
      * @type {Array<Channel>}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     private channels: Array<Channel|PresenceChannel> = [];
 
@@ -30,7 +30,7 @@ export default class RealDriver {
      *
      * @private
      * @type {Array<StateChannel>}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     private states: Array<StateChannel>;
 
@@ -50,7 +50,7 @@ export default class RealDriver {
      * Get the socket id
      *
      * @returns {string}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public getSocketId(): string {
         return this.socket.id;
@@ -59,7 +59,7 @@ export default class RealDriver {
     public getSocketOptions(): any {
         return {
             query: `appId=${this.options.app_id}`,
-            path: '/real',
+            path: '/socket-bus',
             transports: ['websocket', 'polling']
         };
     }
@@ -67,10 +67,11 @@ export default class RealDriver {
     /**
      * Connects to the socket
      *
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public connect() {
-        this.socket = io.default(`https://0.0.0.0:3000/`, this.getSocketOptions());
+        
+        this.socket = io.default(this.options.url ? this.options.url: `https://0.0.0.0:3000/`, this.getSocketOptions());
         // this.socket = io(`http://localhost:3001/`, this.getSocketOptions());
         this.socket.on('$start', (data: any)=>{
             console.log(data)
@@ -104,7 +105,7 @@ export default class RealDriver {
     /**
      * Disconnects
      *
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public disconnect() {
 
@@ -114,7 +115,7 @@ export default class RealDriver {
      * Leave channel
      *
      * @param {string} name
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public leaveChannel(name:string) {
         let channel:Channel|undefined = this.findChannelByName(name);
@@ -130,7 +131,7 @@ export default class RealDriver {
      * @param {string} name
      * @param {*} options
      * @returns
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public addChannel(name: string, options: any, useObject?: any) {
         let build:Function = useObject ? useObject.build : Channel.build;
@@ -141,7 +142,7 @@ export default class RealDriver {
                     channel.join(data.auth, data.data, data.presence, data.state_data);
                 })
                 .catch((error: any) => {
-                    console.error(`[Real] Could not authenticate channel ${name}`)
+                    console.error(`[SocketBus] Could not authenticate channel ${name}`)
                 });
         });
         this.channels.push(channel);
@@ -153,7 +154,7 @@ export default class RealDriver {
      *
      * @param {string} name
      * @returns
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public removeChannel(name: string) {
         let channel:Channel|undefined = this.findChannelByName(name);
@@ -172,7 +173,7 @@ export default class RealDriver {
      *
      * @param {string} name
      * @returns {Channel}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public findChannelByName(name: string):Channel|undefined {
         return this.channels.find((channel:Channel) => channel.name === name);
@@ -183,7 +184,7 @@ export default class RealDriver {
      *
      * @param {string} name
      * @returns {Channel}
-     * @memberof RealDriver
+     * @memberof SocketBusDriver
      */
     public getChannel(name: string, useObject?: any): Channel {
         let channel:Channel|undefined = this.findChannelByName(name);
