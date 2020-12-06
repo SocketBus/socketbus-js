@@ -41,6 +41,9 @@ export default class SocketBusDriver {
     private isConnected: Boolean = false;
     private callbacksOnConnectOrLater: Array<Function> = [];
 
+    private isEndToEndEncryptionOn: boolean = false;
+    private isSocketToSocketOn: boolean = false;
+
     constructor(options: any) {
         this.options = options;
         this.authenticator = new Authenticator(options);
@@ -70,16 +73,19 @@ export default class SocketBusDriver {
      * @memberof SocketBusDriver
      */
     public connect() {
-        
         this.socket = io.default(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
-        // this.socket = io(`http://localhost:3001/`, this.getSocketOptions());
+
         this.socket.on('$start', (data: any)=>{
+            this.isEndToEndEncryptionOn = data.e2e??false;
+            this.isSocketToSocketOn = data.s2s??false;
             this.isConnected = true;
+
             this.executeAllCallbacksOnConnect();
             if (this.options.onConnect) {
                 this.options.onConnect(this);
             }
         });
+
         this.socket.on('disconnect', ()=>{
             this.isConnected = false;
         });
@@ -136,8 +142,20 @@ export default class SocketBusDriver {
         let channel:Channel|PresenceChannel = build(this.socket, name, options);
         this.pushCallbackOnConnect(()=>{
             this.authenticator.authChannel(this.getSocketId(), name)
-                .then((data: any) => {
-                    channel.join(data.auth, data.data, data.presence, data.state_data);
+                .then((_data: any) => {
+                    const {
+                        auth,
+                        data,
+                        presence,
+                        state_data,
+                        e2e
+                    } = _data;
+                    if (this.isEndToEndEncryptionOn && !e2e) {
+                        let message = "[SocketBus] End-to-end encryption is enable, but the password for this channel was not found. Did you set the Custom Encryption Key on your server?";
+                        console.error(message)
+                        throw new Error(message);
+                    }
+                    channel.join(auth, data, presence, state_data, e2e);
                 })
                 .catch((error: any) => {
                     console.error(`[SocketBus] Could not authenticate channel ${name}`)

@@ -1,5 +1,25 @@
 import Listener from './Listener';
 import PresenceChannel from './PresenceChannel';
+import { AES, enc, lib, mode } from "crypto-js";
+import { Cipher } from 'crypto';
+
+
+var CryptoJSAesJson = {
+    'stringify': function (cipherParams: any) {
+        var j:any = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) }
+        if (cipherParams.iv) j.iv = cipherParams.iv.toString()
+        if (cipherParams.salt) j.s = cipherParams.salt.toString()
+        return JSON.stringify(j).replace(/\s/g, '')
+    },
+    'parse': function (jsonStr:any) {
+        var j = JSON.parse(jsonStr)
+        var cipherParams = lib.CipherParams.create({ ciphertext: enc.Base64.parse(j.ct) })
+        if (j.iv) cipherParams.iv = enc.Hex.parse(j.iv)
+        if (j.s) cipherParams.salt = enc.Hex.parse(j.s)
+        return cipherParams
+    }
+}
+
 export default class Channel {
     /**
      * Channel name, used to identify the channel
@@ -58,6 +78,16 @@ export default class Channel {
      * @memberof Channel
      */
     private authData: any;
+
+    /**
+     * Holds the encryption password for this channel
+     *
+     * @private
+     * @var string
+     * @memberof Channel
+     */
+    private e2ePassword: string|undefined;
+    private e2eIv: string|undefined;
 
     /**
      * Creates an instance of Channel.
@@ -129,12 +159,22 @@ export default class Channel {
 
         this.listeners.push(new Listener(this.socket, formatedEvent, (data:any) => {
             if (channelName == data.channel) {
-                callback(data.data);
+                if (this.e2ePassword) {
+                    const decrypted = AES.decrypt(data.data, this.e2ePassword, {
+                        format: CryptoJSAesJson
+                    }).toString(enc.Utf8);
+                    callback(
+                        JSON.parse(decrypted)
+                    );
+                } else {
+                    callback(data.data);
+                }
             }
         }));
 
         return this;
     }
+
 
     /**
      * Removes a listener by its name
@@ -164,9 +204,10 @@ export default class Channel {
      *
      * @memberof Channel
      */
-    public join(authToken: string, authData?: any, isPresence?:Boolean, stateData?:any): void {
+    public join(authToken: string, authData?: any, isPresence?:Boolean, stateData?:any, e2ePassword?: string): void {
         this.authToken = authToken;
         this.authData = authData;
+        this.e2ePassword = e2ePassword;
 
         // if (this['onJoinState']) {
         //     this['onJoinState'](stateData);
