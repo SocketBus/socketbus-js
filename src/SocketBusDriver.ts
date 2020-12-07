@@ -78,7 +78,14 @@ export default class SocketBusDriver {
         this.socket.on('$start', (data: any)=>{
             this.isEndToEndEncryptionOn = data.e2e??false;
             this.isSocketToSocketOn = data.s2s??false;
+
             this.isConnected = true;
+
+            if (this.isSocketToSocketOn) {
+                this.channels.forEach((channel: Channel| PresenceChannel) => {
+                    channel.setS2s(true);
+                });
+            }
 
             this.executeAllCallbacksOnConnect();
             if (this.options.onConnect) {
@@ -155,7 +162,7 @@ export default class SocketBusDriver {
                         console.error(message)
                         throw new Error(message);
                     }
-                    channel.join(auth, data, presence, state_data, e2e);
+                    channel.join(auth, data, presence, state_data, e2e, this.isSocketToSocketOn);
                 })
                 .catch((error: any) => {
                     console.error(`[SocketBus] Could not authenticate channel ${name}`)

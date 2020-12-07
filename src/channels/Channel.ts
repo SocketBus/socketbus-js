@@ -1,12 +1,10 @@
 import Listener from './Listener';
-import PresenceChannel from './PresenceChannel';
-import { AES, enc, lib, mode } from "crypto-js";
-import { Cipher } from 'crypto';
+import { AES, enc, lib } from "crypto-js";
 
 
 var CryptoJSAesJson = {
     'stringify': function (cipherParams: any) {
-        var j:any = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) }
+        var j:any = { ct: cipherParams.ciphertext.toString(enc.Base64) }
         if (cipherParams.iv) j.iv = cipherParams.iv.toString()
         if (cipherParams.salt) j.s = cipherParams.salt.toString()
         return JSON.stringify(j).replace(/\s/g, '')
@@ -87,7 +85,7 @@ export default class Channel {
      * @memberof Channel
      */
     private e2ePassword: string|undefined;
-    private e2eIv: string|undefined;
+    private s2sEnabled: boolean = false;
 
     /**
      * Creates an instance of Channel.
@@ -105,6 +103,10 @@ export default class Channel {
         this.reconnectListener = new Listener(this.socket, 'reconnect', ()=>{
             // this.join(this.authToken, this.authData);
         });
+    }
+
+    public setS2s(status: boolean){
+        this.s2sEnabled = status;
     }
 
     /**
@@ -155,6 +157,7 @@ export default class Channel {
      */
     public listen(event: string, callback: Function): Channel {
         let formatedEvent = this.formatEvent(event);
+
         let channelName = this.name;
 
         this.listeners.push(new Listener(this.socket, formatedEvent, (data:any) => {
@@ -204,14 +207,11 @@ export default class Channel {
      *
      * @memberof Channel
      */
-    public join(authToken: string, authData?: any, isPresence?:Boolean, stateData?:any, e2ePassword?: string): void {
+    public join(authToken: string, authData?: any, isPresence?:Boolean, stateData?:any, e2ePassword?: string, s2s?: boolean): void {
         this.authToken = authToken;
         this.authData = authData;
         this.e2ePassword = e2ePassword;
-
-        // if (this['onJoinState']) {
-        //     this['onJoinState'](stateData);
-        // }
+        this.s2sEnabled = s2s??false;
 
         this.socket.emit('join-channel', {
             channel_name: this.name,
@@ -235,12 +235,57 @@ export default class Channel {
     }
 
     /**
-     * Whispers a small message
+     * Emits an event directly to a channel
      * 
-     * @memberof Channel
+     * @param event
+     * @param payload 
      */
-    // public whisper(): void {
-    //     this.socket.emit('whisper', {
-    //     })
-    // }
+    public emit(event:string, payload: any = {}):void {
+        if (!this.s2sEnabled) {
+            throw new Error("[SocketBus] Socket-to-socket communication is not enabled.");
+        }
+        
+        let formatedEvent = this.formatEvent(event);
+
+        if (this.e2ePassword) {
+            payload = AES.encrypt(JSON.stringify(payload), this.e2ePassword, {
+                format: CryptoJSAesJson
+            }).toString();
+        }
+
+        this.socket.emit('emit-channel', {
+            channel_name: this.name,
+            event: formatedEvent,
+            data: payload
+        });
+    }
+
+    /**
+     * Whispers a message up to 128 bytes
+     * 
+     * @param event 
+     * @param payload 
+     * @param duration 
+     */
+    public whisper(event: string, payload: any): void {
+        const json = JSON.stringify(payload);
+        const blob = new Blob([json]);
+        if (blob.size > 128) {
+            throw new Error(`[SocketBus] The payload whisper size limit is 128 bytes. ${blob.size} sent`);
+        }
+        
+        let formatedEvent = this.formatEvent(event);
+
+        if (this.e2ePassword) {
+            payload = AES.encrypt(JSON.stringify(payload), this.e2ePassword, {
+                format: CryptoJSAesJson
+            }).toString();
+        }
+
+        this.socket.emit('whisper-channel', {
+            channel_name: this.name,
+            event: formatedEvent,
+            data: payload
+        });
+    }
 }
