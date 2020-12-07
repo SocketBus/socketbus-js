@@ -1,1 +1,1 @@
-# datayetjs
+# SocketBus JavaScript Client

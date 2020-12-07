@@ -21,7 +21,7 @@ export default class SocketBus {
         
         return new laravelEcho({
             broadcaster: 'socket-bus',
-            key: 'your-pusher-channels-key'
+            key: 'public-key'
         });
     }
 }
