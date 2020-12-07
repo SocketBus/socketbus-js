@@ -229,4 +229,12 @@ export default class SocketBusDriver {
 
         return presenceChannel;
     }
+
+
+    /**
+     * Get a private channel instance by name.
+     */
+    privateChannel(name: string): Channel {
+        return this.getChannel(`private-${name}`);
+    }
 }

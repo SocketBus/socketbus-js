@@ -8,6 +8,7 @@ declare const Vue: any;
 declare const jQuery: any;
 declare const axios: any;
 declare const window: any;
+
 export class LaravelConnector {
     /**
      * The Socket.io connection instance.
@@ -27,10 +28,10 @@ export class LaravelConnector {
             headers: {},
         },
         authEndpoint: '/broadcasting/auth',
-        broadcaster: 'pusher',
+        broadcaster: 'socketbus',
         csrfToken: null,
         host: null,
-        key: null,
+        app_id: null,
         namespace: 'App.Events',
     };
 

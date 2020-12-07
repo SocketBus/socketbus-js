@@ -5,7 +5,7 @@ export default class SocketBus {
         laravelEcho.prototype._connect = laravelEcho.prototype.connect;
 
         laravelEcho.prototype.connect = function() {
-            if (this.options.broadcaster === 'socket-bus') {
+            if (this.options.broadcaster === 'socketbus') {
                 this.connector = new LaravelConnector(Object.assign(this.options, options));
             } else {
                 this._connect();
@@ -13,14 +13,14 @@ export default class SocketBus {
         };
 
         laravelEcho.prototype.state = function(channel: string) {
-            if (this.options.broadcaster === 'socket-bus') {
+            if (this.options.broadcaster === 'socketbus') {
                 return this.connector.stateChannel(channel);
             }
             return null;
         }
         
         return new laravelEcho({
-            broadcaster: 'socket-bus',
+            broadcaster: 'socketbus',
             key: 'public-key'
         });
     }
