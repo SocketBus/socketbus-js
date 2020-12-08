@@ -1,12 +1,11 @@
 import Channel from './channels/Channel';
 import StateChannel from "./channels/StateChannel";
-import Driver from './drivers/Driver';
 
 import * as io from "socket.io-client";
 import Authenticator from './auth/Authenticator';
 import PresenceChannel from './channels/PresenceChannel';
 
-export default class SocketBusDriver {
+export default class SocketBus {
     /**
      * Socket instance.
      *

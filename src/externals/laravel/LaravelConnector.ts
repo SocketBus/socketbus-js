@@ -1,4 +1,4 @@
-import SocketBusDriver from "../../SocketBusDriver";
+import SocketBus from "../../SocketBus";
 import Channel from '../../channels/Channel';
 import PresenceChannel from '../../channels/PresenceChannel';
 import LaravelAuthenticator from './LaravelAuthenticator';
@@ -43,10 +43,10 @@ export class LaravelConnector {
     /**
      * Our amazing driver!
      *
-     * @type {SocketBusDriver}
+     * @type {SocketBus}
      * @memberof LaravelConnector
      */
-    socketBus: SocketBusDriver;
+    socketBus: SocketBus;
 
     /**
      * Merge the custom options with the defaults.
@@ -77,7 +77,7 @@ export class LaravelConnector {
             return event.replace(/\./g, '\\');
         }
 
-        this.socketBus = new SocketBusDriver(Object.assign(this._defaultOptions, options));
+        this.socketBus = new SocketBus(Object.assign(this._defaultOptions, options));
         this.socketBus.authenticator.setExternal(new LaravelAuthenticator(this.socketBus.options));
         this.socketBus.connect();
     }
