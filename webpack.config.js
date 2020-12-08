@@ -26,5 +26,6 @@ module.exports = {
     output: {
         filename: 'socketbus.min.js',
         path: path.resolve(__dirname, 'dist'),
+        library: 'SocketBus'
     },
 };

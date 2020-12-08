@@ -3,6 +3,10 @@ import SocketBus from './SocketBus';
 
 export default SocketBus;
 
+export const init = (options: any)=>{
+    return new SocketBus(options);
+};
+
 export const SocketBusLaravel = (laravelEcho: any, options: any) => {
 
     laravelEcho.prototype._connect = laravelEcho.prototype.connect;
