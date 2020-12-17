@@ -15,7 +15,7 @@ export default class PresenceChannel extends Channel {
      */
     public here(callback: Function): PresenceChannel {
         this.listeners.push(new Listener(this.socket, 'presence:join', (users: any)=>{
-            callback(users);
+            callback(users.map((user: any) => this.decryptPayload(user, true)));
         }));
         
         return this;
@@ -30,7 +30,7 @@ export default class PresenceChannel extends Channel {
      */
     public joining(callback: Function): PresenceChannel {
         this.listeners.push(new Listener(this.socket, 'presence:joining', (user: any)=>{
-            callback(user);
+            callback(this.decryptPayload(user, true));
         }));
 
         return this;
@@ -45,7 +45,7 @@ export default class PresenceChannel extends Channel {
      */
     public leaving(callback: Function): PresenceChannel {
         this.listeners.push(new Listener(this.socket, 'presence:leaving', (user: any)=>{
-            callback(user);
+            callback(this.decryptPayload(user, true));
         }));
 
         return this;

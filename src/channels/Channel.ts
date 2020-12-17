@@ -12,8 +12,8 @@ var CryptoJSAesJson = {
     'parse': function (jsonStr:any) {
         var j = JSON.parse(jsonStr)
         var cipherParams = lib.CipherParams.create({ ciphertext: enc.Base64.parse(j.ct) })
-        if (j.iv) cipherParams.iv = enc.Hex.parse(j.iv)
-        if (j.s) cipherParams.salt = enc.Hex.parse(j.s)
+        if (j.iv) cipherParams.iv = enc.Hex.parse(j.iv);
+        if (j.s) cipherParams.salt = enc.Hex.parse(j.s);
         return cipherParams
     }
 }
@@ -166,6 +166,7 @@ export default class Channel {
                     const decrypted = AES.decrypt(data.data, this.e2ePassword, {
                         format: CryptoJSAesJson
                     }).toString(enc.Utf8);
+
                     callback(
                         JSON.parse(decrypted)
                     );
@@ -232,6 +233,20 @@ export default class Channel {
             channel_name: this.name,
             auth_token: this.authToken
         });
+    }
+
+    protected decryptPayload(payload: any, parseJson: boolean = false) {
+        if (this.e2ePassword) {
+            payload = AES.decrypt(payload, this.e2ePassword, {
+                format: CryptoJSAesJson
+            }).toString(enc.Utf8);
+        }
+
+        if (parseJson) {
+            payload = JSON.parse(payload);
+        }
+
+        return payload;
     }
 
     /**
