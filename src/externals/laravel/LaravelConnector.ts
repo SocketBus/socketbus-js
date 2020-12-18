@@ -32,6 +32,7 @@ export class LaravelConnector {
         csrfToken: null,
         host: null,
         app_id: null,
+        shouldConnect: false,
         namespace: 'App.Events',
     };
 

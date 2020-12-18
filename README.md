@@ -36,11 +36,10 @@ const socketBus = new SocketBus({
 
 ## Laravel Echo
 ```js
-import SocktBus from "socketbus-js";
+import { SocketBusLaravel } from "socketbus-js";
 import LaravelEcho from "laravel-echo";
 
-window.Echo = SocktBus.laravel(LaravelEcho, {
-    broadcaster: 'socketbus',
+window.Echo = SocketBusLaravel(LaravelEcho, {
     app_id: 'my-app-id'
 });
 

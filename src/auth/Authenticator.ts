@@ -1,4 +1,5 @@
 import AuthenticatorInterface from '../externals/AuthenticatorInterface';
+import DefaultExternal from './DefaultExternal';
 const nanoajax = require('../libs/nanoajax');
 
 export default class Authenticator {
@@ -9,6 +10,8 @@ export default class Authenticator {
 
     constructor(options: any) {
         this.options = options;
+
+        this.external = new DefaultExternal(this.options);
     }
 
     public setExternal(external: AuthenticatorInterface) {

@@ -46,6 +46,10 @@ export default class SocketBus {
     constructor(options: any) {
         this.options = options;
         this.authenticator = new Authenticator(options);
+
+        if (this.options.shouldConnect !== false) {
+            this.connect();
+        }
     }
 
     /**
@@ -235,5 +239,17 @@ export default class SocketBus {
      */
     privateChannel(name: string): Channel {
         return this.getChannel(`private-${name}`);
+    }
+
+    public private(name: string): Channel  {
+        return this.privateChannel(name);
+    }
+
+    public public(name: string): Channel  {
+        return this.getChannel(`public-${name}`);
+    }
+
+    public join(name: string): Channel  {
+        return this.getPresenceChannel(`presence-${name}`);
     }
 }
