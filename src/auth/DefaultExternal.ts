@@ -8,7 +8,7 @@ export default class DefaultExternal implements AuthenticatorInterface {
     }
     
     getHeaders() {
-        return {};
+        return this.options.auth.headers;
     }
 
     getExtraParams() {

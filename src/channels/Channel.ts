@@ -161,7 +161,7 @@ export default class Channel {
         let channelName = this.name;
 
         this.listeners.push(new Listener(this.socket, formatedEvent, (data:any) => {
-            if (channelName == data.channel) {
+            if (channelName == data.channel && (!data.i || data.i.indexOf(this.socket.id) === -1)) {
                 if (this.e2ePassword) {
                     const decrypted = AES.decrypt(data.data, this.e2ePassword, {
                         format: CryptoJSAesJson

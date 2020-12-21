@@ -63,8 +63,14 @@ export default class SocketBus {
     }
 
     public getSocketOptions(): any {
+        let alias = "";
+
+        if (this.options.user_id) {
+            alias = `&userId=${this.options.user_id}`;
+        }
+
         return {
-            query: `appId=${this.options.app_id}`,
+            query: `appId=${this.options.app_id}${alias}`,
             path: '/socketbus',
             transports: ['websocket', 'polling']
         };

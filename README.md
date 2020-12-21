@@ -22,6 +22,9 @@ const socketBus = new SocketBus({
     // Application namespace
     namespace: '',
 
+    // User id to be able to send event to all but the sender
+    user_id: null,
+
     // Event fired on Connect
     onConnect: () => {
 
@@ -51,7 +54,7 @@ Echo.private('foods')
 ## Joining Channels
 
 ```js
-const foodsChannel = socketBus.privateChannel('foods')
+const foodsChannel = socketBus.private('foods')
     .listen('new-food', (payload) => { /** callback */ })
     .listen('food-status', (payload) => { /** callback */ })
 ```
