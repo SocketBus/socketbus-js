@@ -1,7 +1,6 @@
 import Listener from './Listener';
 import { AES, enc, lib } from "crypto-js";
 
-
 var CryptoJSAesJson = {
     'stringify': function (cipherParams: any) {
         var j:any = { ct: cipherParams.ciphertext.toString(enc.Base64) }

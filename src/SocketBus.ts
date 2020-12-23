@@ -1,7 +1,8 @@
 import Channel from './channels/Channel';
 import StateChannel from "./channels/StateChannel";
 
-import * as io from "socket.io-client";
+import io from "./libs/socketio";
+
 import Authenticator from './auth/Authenticator';
 import PresenceChannel from './channels/PresenceChannel';
 
@@ -82,7 +83,7 @@ export default class SocketBus {
      * @memberof SocketBusDriver
      */
     public connect() {
-        this.socket = io.default(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
+        this.socket = io(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
 
         this.socket.on('$start', (data: any)=>{
             this.isEndToEndEncryptionOn = data.e2e??false;

@@ -9,7 +9,7 @@ module.exports = {
         ],
     },
     entry: './src/Index.ts',
-    target: 'web',
+    target: 'node',
     mode: 'production',
     module: {
         rules: [
@@ -24,10 +24,10 @@ module.exports = {
         extensions: [ '.tsx', '.ts', '.js' ],
     },
     output: {
-        filename: 'socketbus.min.js',
+        filename: 'index.js',
         path: path.resolve(__dirname, 'dist'),
         library: 'SocketBus',
         libraryTarget: 'umd',
-        libraryExport: 'default',
+        // libraryExport: 'default',
     },
 };
