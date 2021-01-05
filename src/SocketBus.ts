@@ -85,7 +85,8 @@ export default class SocketBus {
     public connect() {
         this.socket = io(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
 
-        this.socket.on('$start', (data: any)=>{
+        this.socket.on('$start', (data: any, _c?: any)=>{
+            if (_c) { _c(); }
             this.isEndToEndEncryptionOn = data.e2e??false;
             this.isSocketToSocketOn = data.s2s??false;
 
