@@ -83,7 +83,8 @@ export default class SocketBus {
      * @memberof SocketBusDriver
      */
     public connect() {
-        this.socket = io(this.options.url ? this.options.url: `https://app.socketbus.com/`, this.getSocketOptions());
+        const [s, serverId, key] = this.options.app_id.split('-');
+        this.socket = io(this.options.url ? this.options.url: `https://s${serverId}.socketbus.com/`, this.getSocketOptions());
 
         this.socket.on('$start', (data: any, _c?: any)=>{
             if (_c) { _c(); }
